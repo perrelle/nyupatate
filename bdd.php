@@ -41,11 +41,11 @@ function getRandomIngredients($current_list)
     $statement = $link->prepare("
       SELECT ingredients.id, ingredients.nom, COUNT(recettes_id) AS score
       FROM ingredients 
-      LEFT JOIN liste_ingredients ON ingredients.id = liste_ingredients.ingrédients_id
+      LEFT JOIN liste_ingredients ON ingredients.id = liste_ingredients.ingrÃ©dients_id
       AND liste_ingredients.recettes_id IN (
         SELECT DISTINCT `recettes_id`
         FROM `liste_ingredients`
-        WHERE ingrédients_id IN ($list_ingr))
+        WHERE ingrÃ©dients_id IN ($list_ingr))
       WHERE ingredients.id NOT IN ($list_ingr)
       GROUP BY ingredients.id
       ORDER BY score DESC, RAND()
@@ -58,7 +58,7 @@ function getRandomIngredients($current_list)
     $statement = $link->prepare("SELECT recettes.id, recettes.nom, COUNT(recettes_id) FROM recettes LEFT JOIN liste_ingredients ON liste_ingredients.recettes_id IN (
         SELECT DISTINCT `recettes_id`
         FROM `liste_ingredients`
-        WHERE ingrédients_id IN ($list_ingr))
+        WHERE ingrÃ©dients_id IN ($list_ingr))
       WHERE ingredients.id NOT IN ($list_ingr)
       GROUP BY ingredients.id
       ORDER BY score DESC, RAND()
@@ -74,7 +74,11 @@ function getRecipe($recipe_id)
 {
   global $link;
 
-  $statement = $link->prepare("SELECT ingredients.nom FROM `liste_ingredients` INNER JOIN ingredients ON liste_ingredients.ingrédients_id = ingredients.id WHERE recettes_id = ?");
+  $statement = $link->prepare("
+    SELECT ingredients.nom
+    FROM `liste_ingredients`
+    INNER JOIN ingredients ON liste_ingredients.ingrÃ©dients_id = ingredients.id
+    WHERE recettes_id = ?");
   $statement->bind_param("i", $recipe_id);
   $statement->execute();
   $result = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -96,6 +100,7 @@ try
 {
   // connect to the DB
   $link = mysqli_connect("localhost", "root", "", "transversal_v2");
+  $link->set_charset('utf8');
 
   // select the request depending on parameters
   switch(getParameter('request'))
@@ -126,7 +131,7 @@ try
 catch (exception $e)
 {
   header("Content-Type: text/plain"); 
-  echo $e->getFile() . ':' . $e->getLine() .' ' . $e->getMessage() . "\n";
+  echo $e->getFile() . ':' . $e->getLine() . '  ' . $e->getMessage() . "\n";
   echo $e->getTraceAsString() . "\n";
 } 
 
