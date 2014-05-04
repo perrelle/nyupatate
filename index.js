@@ -46,7 +46,6 @@ function refresh_list(){
   {
       document.getElementById(ingredient.htmlid).onclick = function(){
         pickIngredient(ingredient);
-        console.log(ingredient.htmlid);
       };
   }
   
@@ -57,11 +56,29 @@ function refresh_list(){
   }
   
   get(uri, function(request){
-      var result = {ingredients : eval(request), bag:list_ingr};
-      for (var i in result.ingredients)
+      var json = JSON.parse(request);
+      if (json.recipes)
       {
+        var result = {ingredients : json.ingredients, bag:list_ingr, recipes : json.recipes};
+        for (var i in result.ingredients)
+        {
+            var ingredient = result.ingredients[i];
+            ingredient.htmlid = "ingr" + ingredient.id;
+        }
+        for (var i in result.recipes)
+        {
+            var recipe = result.recipes[i];
+            recipe.htmlid = recipe.id;
+        }
+      }
+      else
+      {
+        var result = {ingredients : eval(request), bag:list_ingr};
+        for (var i in result.ingredients)
+        {
           var ingredient = result.ingredients[i];
           ingredient.htmlid = "ingr" + ingredient.id;
+        }
       }
       document.body.innerHTML = Mustache.render(templates.recipe, result);
       for (var i in result.ingredients)

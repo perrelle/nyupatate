@@ -9,7 +9,7 @@ error_reporting(E_ALL | E_STRICT);
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 // Convert php errors to exceptions
-function exception_error_handler($errno, $errstr, $errfile, $errline ) {
+function exception_error_handler($errno, $errstr, $errfile, $errline) {
     throw new ErrorException($errstr, $errno, 1, $errfile, $errline);
 }
 set_error_handler("exception_error_handler");
@@ -38,8 +38,7 @@ function getRandomIngredients($current_list)
     }
     $list_ingr = implode(',', $escapeingr);
     
-    $statement = $link->prepare("
-      SELECT ingredients.id, ingredients.nom, COUNT(recettes_id) AS score
+    $statement = $link->prepare("SELECT ingredients.id, ingredients.nom, COUNT(recettes_id) AS score
       FROM ingredients 
       LEFT JOIN liste_ingredients ON ingredients.id = liste_ingredients.ingrédients_id
       AND liste_ingredients.recettes_id IN (
@@ -51,19 +50,22 @@ function getRandomIngredients($current_list)
       ORDER BY score DESC, RAND()
       LIMIT 5");
     $statement->execute();
-    $result = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
+    $result_ingr = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
     $statement->close();
 
-    /*
-    $statement = $link->prepare("SELECT recettes.id, recettes.nom, COUNT(recettes_id) FROM recettes LEFT JOIN liste_ingredients ON liste_ingredients.recettes_id IN (
+    
+    $statement = $link->prepare("SELECT DISTINCT recettes.id, recettes.nom FROM recettes 
+        INNER JOIN liste_ingredients ON recettes.id IN (
         SELECT DISTINCT `recettes_id`
         FROM `liste_ingredients`
         WHERE ingrédients_id IN ($list_ingr))
-      WHERE ingredients.id NOT IN ($list_ingr)
-      GROUP BY ingredients.id
-      ORDER BY score DESC, RAND()
-      LIMIT 5");
-      */
+        ORDER BY RAND()
+        LIMIT 5");
+    $statement->execute();
+    $result_recipe = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
+    $statement->close();
+      
+    $result = array("ingredients" => $result_ingr, "recipes" => $result_recipe);
   }
 
   return $result;
@@ -133,7 +135,6 @@ catch (exception $e)
   header("Content-Type: text/plain"); 
   echo $e->getFile() . ':' . $e->getLine() . '  ' . $e->getMessage() . "\n";
   echo $e->getTraceAsString() . "\n";
-} 
-
+}
 
 ?>
