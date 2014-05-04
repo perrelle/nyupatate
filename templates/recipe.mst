@@ -1,0 +1,16 @@
+<ul>{{#ingredients}}
+<li id='{{htmlid}}'>{{nom}} ({{score}})</li>
+{{/ingredients}}
+</ul>
+
+<h2>Ingrédients déjà sélectionnés :</h2>
+<ul>{{#bag}}
+<li>{{nom}}</li>
+{{/bag}}
+</ul>
+
+<h2>Suggestions de recettes :</h2>
+<ul>{{#recipes}}
+<li>{{nom}}</li>
+{{/recipes}}
+</ul>
