@@ -1,16 +1,13 @@
+{{#recipe}}<h2>{{nom}}</h2>{{/recipe}}
+Saisons : {{#seasons}}<img src='{{nom}}' alt='{{nom}}'>{{/seasons}}<br>
+Liste des ingrédients :
 <ul>{{#ingredients}}
-<li id='{{htmlid}}'>{{nom}} ({{score}})</li>
-{{/ingredients}}
-</ul>
-
-<h2>Ingrédients déjà sélectionnés :</h2>
-<ul>{{#bag}}
-<li>{{nom}}</li>
-{{/bag}}
-</ul>
-
-<h2>Suggestions de recettes :</h2>
-<ul>{{#recipes}}
-<li>{{nom}}</li>
-{{/recipes}}
-</ul>
+<li class='capitalize'>{{nom}}</li>
+{{/ingredients}}</ul>
+{{#recipe}}Temps de préparation : {{temps}} minutes<br>
+Difficulté : {{difficulte}}/5<br>
+Prix : {{prix}}/5<br>
+Description : {{description}}{{/recipe}}<br>
+<br><br>
+<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost/Transversal/" target="_blank">Partager</a><br>
+<button onclick='main_menu()'>Retour au menu principal</button>

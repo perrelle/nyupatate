@@ -17,71 +17,85 @@ set_error_handler("exception_error_handler");
 
 // --- BDD requests ---
 
-// Get a random list of ingredients, based on previously selected ones
-function getRandomIngredients($current_list)
-{
-  global $link;
-
-  if (empty($current_list))
+//Get the ingredient list
+function getAllIngredients($link){
+  $result_type = mysqli_query($link, "SELECT id, nom FROM type");
+  $list_types = array();
+  while ($row = mysqli_fetch_assoc($result_type))
+    array_push($list_types, $row['nom']);
+  foreach ($list_types as $id => $type)
   {
-    $statement = $link->prepare("SELECT `id`, `nom` FROM `ingredients` ORDER BY RAND() LIMIT 5");
+    $statement = $link->prepare("SELECT ingredients.nom as ingredient, ingredients.id, type.nom as type FROM ingredients INNER JOIN type ON type.id = ingredients.type_id WHERE type_id = ? + 1");
+    $statement->bind_param("i", $id);
     $statement->execute();
-    $result = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
+    $result[$type] = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
     $statement->close();
   }
-  else
-  {
-    $escapeingr = array();
-    foreach ($current_list as &$ingr)
-    {
-      array_push ($escapeingr, $link->real_escape_string($ingr));
-    }
-    $list_ingr = implode(',', $escapeingr);
-    
-    $statement = $link->prepare("SELECT ingredients.id, ingredients.nom, COUNT(recettes_id) AS score
-      FROM ingredients 
-      LEFT JOIN liste_ingredients ON ingredients.id = liste_ingredients.ingrédients_id
-      AND liste_ingredients.recettes_id IN (
-        SELECT DISTINCT `recettes_id`
-        FROM `liste_ingredients`
-        WHERE ingrédients_id IN ($list_ingr))
-      WHERE ingredients.id NOT IN ($list_ingr)
-      GROUP BY ingredients.id
-      ORDER BY score DESC, RAND()
-      LIMIT 5");
-    $statement->execute();
-    $result_ingr = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
-    $statement->close();
+  return $result;
+}
 
-    
-    $statement = $link->prepare("SELECT DISTINCT recettes.id, recettes.nom FROM recettes 
+function suggestRecipes($link, $current_list, $process){
+  $escapeingr = array();
+  foreach ($current_list as &$ingr)
+  {
+    array_push ($escapeingr, $link->real_escape_string($ingr));
+  }
+  $list_ingr = implode(',', $escapeingr);
+  $statement = $link->prepare("SELECT DISTINCT recettes.id, recettes.nom, recettes.temps, recettes.prix FROM recettes 
         INNER JOIN liste_ingredients ON recettes.id IN (
-        SELECT DISTINCT `recettes_id`
-        FROM `liste_ingredients`
-        WHERE ingrédients_id IN ($list_ingr))
+          SELECT DISTINCT `recettes_id`
+          FROM `liste_ingredients`
+          WHERE ingrédients_id IN ($list_ingr))
+        WHERE process_id = $process
         ORDER BY RAND()
         LIMIT 5");
-    $statement->execute();
-    $result_recipe = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
-    $statement->close();
-      
-    $result = array("ingredients" => $result_ingr, "recipes" => $result_recipe);
-  }
+  $statement->execute();
+  $result = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
+  $statement->close();
 
   return $result;
 }
 
 // Get a recipe by id
-function getRecipe($recipe_id)
+function getRecipe($link, $recipe_id)
 {
-  global $link;
-
   $statement = $link->prepare("
     SELECT ingredients.nom
     FROM `liste_ingredients`
     INNER JOIN ingredients ON liste_ingredients.ingrédients_id = ingredients.id
     WHERE recettes_id = ?");
   $statement->bind_param("i", $recipe_id);
+  $statement->execute();
+  $result_ingr = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
+  $statement->close();
+
+  $statement = $link->prepare("
+    SELECT *
+    FROM `recettes`
+    WHERE id = ?");
+  $statement->bind_param("i", $recipe_id);
+  $statement->execute();
+  $result_recipe = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
+  $statement->close();
+
+  $statement = $link->prepare("
+    SELECT saisons.nom
+    FROM recettes_has_saisons
+    INNER JOIN saisons ON recettes_has_saisons.saisons_id = saisons.id
+    WHERE recettes_id = ?");
+  $statement->bind_param("i", $recipe_id);
+  $statement->execute();
+  $result_seasons = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
+  $statement->close();
+
+  $result = array("ingredients" => $result_ingr, "recipe" => $result_recipe, "seasons" => $result_seasons);
+  return $result;
+}
+
+// Get all processes
+function getProcesses($link)
+{
+  $statement = $link->prepare("SELECT nom, id FROM process");
   $statement->execute();
   $result = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
   $statement->close();
@@ -107,14 +121,23 @@ try
   // select the request depending on parameters
   switch(getParameter('request'))
   {
-    case 'random' :
-      $ingredient_list = getParameter('ingr');
-      $result = getRandomIngredients($ingredient_list);
-      break;
-
     case 'recipe' :
       $recipe_id = getParameter('id');
-      $result = getRecipe($recipe_id);
+      $result = getRecipe($link, $recipe_id);
+      break;
+
+    case 'list' :
+      $result = getAllIngredients($link);
+      break;
+
+    case 'suggest' :
+      $ingredient_list = getParameter('ingr');
+      $process = getParameter('process');
+      $result = suggestRecipes($link, $ingredient_list, $process);
+      break;
+
+    case 'process_list' :
+      $result = getProcesses($link);
       break;
 
     default:

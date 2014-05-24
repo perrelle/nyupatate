@@ -1,0 +1,169 @@
+@font-face{
+    font-family: 'Clemente';
+    src: url('CLEMENTEPDAC-EXTRALIGHT.TTF') format('truetype');
+}
+body
+{
+	font-family:'pacifico';
+	font-size:18px;
+	background-color:#E4DBD2;
+}
+.grand {
+    float: left;
+    width: 90%;
+    margin-bottom:25px;
+}
+.rond1 {
+    background-color: #EFDE8C;
+    border-bottom-left-radius: 110px;
+    border-bottom-right-radius: 110px;
+    border-top-left-radius: 110px;
+    border-top-right-radius: 110px;
+    float: left;
+    height: 100px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    position: absolute;
+    width: 100px;
+    z-index: 5;
+}
+.rond2 {
+    background-color: #FFFFFF;
+    border-bottom-left-radius: 90px;
+    border-bottom-right-radius: 90px;
+    border-top-left-radius: 90px;
+    border-top-right-radius: 90px;
+    height: 86px;
+    padding-bottom: 7px;
+    padding-left: 7px;
+    padding-right: 7px;
+    padding-top: 7px;
+    width: 86px;
+}
+.photorond {
+    border-bottom-left-radius: 100px;
+    border-bottom-right-radius: 100px;
+    border-top-left-radius: 100px;
+    border-top-right-radius: 100px;
+    width: 85px;
+}
+.texte {
+    background-color: #744D1E;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    float: left;
+    height: 70px;
+    margin-left: 30px;
+    margin-top: 22px;
+    position: relative;
+    width: 300px;
+    z-index: 1;
+    padding: 5px;
+    font-family: 'Clemente';
+    font-size: 15px;
+    color: #ffffff;
+}
+
+.titre{
+    font-family: 'Clemente';
+    font-size: 20px;
+    color: #ffffff;
+    margin-left: 100px;
+    border-bottom: 1px solid #fff;
+}
+
+.argent{
+    font-size: 16px;
+    float:left;
+    margin-left: 20px;
+    margin-top: 10px
+}
+
+.temps{
+    font-size: 16px;
+    float:left;
+    margin-left: 100px;
+    margin-top: 10px
+}
+h2
+{
+    text-align:center;
+    font-family:'Clemente';
+}
+.list
+{
+    float:left;
+    text-align:center;
+    text-transform:capitalize;
+    max-width: 100px;
+    height: 150px;
+    line-height: 110%;
+    margin-left:7px;
+    font-family:'Calibri';
+    color:#FFF;
+}
+.checked
+{
+    color:#000;
+}
+.recipe
+{
+    font-family:'Clemente';
+}
+.legumes
+{
+    background-color:#5FB94A;
+    float:left;
+    width:100%;
+}
+.laitages
+{
+    background-color:#5985E9;
+    float:left;
+    width:100%;
+}
+.viandes
+{
+    background-color:#EC1831;
+    float:left;
+    width:100%;
+}
+.fruits
+{
+    background-color:#01761C;
+    float:left;
+    width:100%;
+}
+.feculents
+{
+    background-color:#694A25;
+    float:left;
+    width:100%;
+}
+.condiments
+{
+    background-color:#E5B84D;
+    float:left;
+    width:100%;
+}
+.title
+{
+    text-align:center;
+    text-decoration:underline;
+    font-family:'pacifico';
+}
+h3
+{
+	clear:both;
+    margin-left:2%;
+    color:#fff;
+    margin-bottom:-10px;
+}
+hr
+{
+    width:98%;
+}

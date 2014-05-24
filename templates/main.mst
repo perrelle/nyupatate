@@ -1,0 +1,7 @@
+Choisissez un process :
+<select id='process' name='process'>
+	{{#processes}}
+		<option value="{{id}}">{{nom}}</option>
+	{{/processes}}
+</select><br>
+<button onclick='refresh_list(); return false'>Envoyer</button>

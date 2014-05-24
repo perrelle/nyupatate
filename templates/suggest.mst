@@ -1,0 +1,25 @@
+<h2>Résultats</h2>
+{{#recipes}}
+<div class='recipe' onclick='displayRecipe({{id}})'>
+	<div class="grand">
+  <div class="rond1">
+   <div class="rond2">
+    <img src="./img/recipe{{id}}.jpg" class="photorond" width="85" height="85">
+   </div>
+  </div>
+  <div class="texte">
+   <span class="titre">{{nom}}</span>
+   <div class="temps">
+    <img src="./img/temps.png" width="20" height="20">
+    {{temps}} minutes
+   </div>
+   <div class="argent">
+    <img src="./img/argent.png" width="20" height="20">
+    {{prix}}€
+   </div>
+  </div>
+ </div>
+</div>
+{{/recipes}}
+<br>
+<button onclick='main_menu()'>Retour au menu principal</button>
